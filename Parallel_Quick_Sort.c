@@ -1,7 +1,7 @@
-#include <bits/stdc++.h>
+#include <stdio.h>
 #include <omp.h>
-using namespace std;
-
+#include<stdlib.h>
+#include<string.h>
 // Function to swap two numbers a and b
 void swap(int* a, int* b)
 {
@@ -60,7 +60,29 @@ void quicksort(int arr[], int start, int end)
 		}
 	}
 }
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
 
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
 // Driver Code
 int main()
 {
@@ -69,18 +91,16 @@ int main()
 
 	// Taking input the number of
 	// elements we wants
-	cout << "Enter the number of elements"
-		<< " you want to Enter\n";
-	cin >> N;
+	printf("Enter the number of elements you want to Enter\n");
+	scanf("%d",&N);
+	int *arr = (int*)calloc(N, sizeof(int)), count = 0;
+	FILE* ptr, *writePtr;
+	int a;
+	ptr = fopen("input.txt", "r");
+	writePtr = fopen("output.txt", "w");
+	while(fscanf(ptr, "%d", &a) != EOF){
+		arr[count++] = a;
 
-	// Declaration of array
-	int arr[N];
-
-	cout << "Enter the array: \n";
-
-	// Taking input that array
-	for (int i = 0; i < N; i++) {
-		cin >> arr[i];
 	}
 
 	// Calling quicksort having parallel
@@ -88,10 +108,15 @@ int main()
 	quicksort(arr, 0, N - 1);
 
 	// Printing the sorted array
-	cout << "Array after Sorting is: \n";
+	printf("Array after Sorting is: \n");
 
 	for (int i = 0; i < N; i++) {
-		cout << arr[i] << " ";
+		//printf("%d ",arr[i] );
+		char str[16];
+		char *s = itoa(arr[i], str, 10);
+		// char space = ' ';
+		// strncat(s, &space, 1);
+		fprintf(writePtr, "%s ", s);
 	}
 
 	return 0;

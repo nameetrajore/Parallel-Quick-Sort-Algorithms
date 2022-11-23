@@ -55,14 +55,14 @@ int findPivot(int median, int n, int **arr, int threadRank){
     return pivot;
 }
 int main(int argc, char* argv[]){
-	if(argc != 4){
-		fprintf(stderr, "incorrect arguments, use as :\n");
-		fprintf(stderr, "./a.out <inputfile.txt> <outputfile.txt> <num_threads>\n");
-		exit(EXIT_FAILURE);
-	}
+	// if(argc != 4){
+	// 	fprintf(stderr, "incorrect arguments, use as :\n");
+	// 	fprintf(stderr, "./a.out <inputfile.txt> <outputfile.txt> <num_threads>\n");
+	// 	exit(EXIT_FAILURE);
+	// }
 	int n, *A;
-	A = readArrayValues(argv[1], &n);
-	int nthreads = roundUp(atoi(argv[3]), 2);
+	A = readArrayValues("input.txt", &n);
+	int nthreads = roundUp(2, 2);
 	int *pivots, *sizes;
 	pivots = (int*) malloc(sizeof(int) * nthreads);
 	sizes = (int*) malloc(sizeof(int) * nthreads);
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]){
 		for(int iter = 0 ; iter < logT ; iter++){
 			int medianBroadcasterThreadRank = pow(2, iter) * threadRank/nthreads;
 			medianBroadcasterThreadRank *= sz;
-        	int median = arr[medianBroadcasterThreadRank][sizes[medianBroadcasterThreadRank] / 2];
+        	int median = arr[medianBroadcasterThreadRank][sizes[medianBroadcasterThreadRank] / 2];   //error here
            	int pairThreadRank = (threadRank - medianBroadcasterThreadRank+(sz>>1))%sz + medianBroadcasterThreadRank;
         	int* pairThreadArr = (int*)malloc(sizes[pairThreadRank] * sizeof(int));
 			int merge_buf[n];
@@ -139,12 +139,14 @@ int main(int argc, char* argv[]){
 			#pragma omp barrier
 		}
 	}
+
 	int k = 0;
 	for(int i = 0 ; i < nthreads ; i++){
 		for(int j = 0 ; j < sizes[i] ; j++){
 			A[k++] = arr[i][j];
 		}
 	}
-	writeArrayValues(argv[2], n, A);
+	
+	writeArrayValues("output.txt", n, A);
 	return 0;
 }
